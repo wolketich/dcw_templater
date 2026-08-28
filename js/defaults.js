@@ -32,17 +32,59 @@ const DEFAULTS = {
     warmRegards: "Warm Regards,"
   },
 
-  defaultWorks: [
-    "Supply & installation of Item 1",
-    "Supply & installation of Item 2"
+  defaultWorks: [],
+
+  workTemplates: [
+    {
+      id: "casement",
+      label: "uPVC Casement Windows",
+      description: "Supply & installation of uPVC Casement Windows",
+      group: "Windows"
+    },
+    {
+      id: "residential-door",
+      label: "uPVC Residential Doors",
+      description: "Supply & installation of uPVC Residential Doors",
+      group: "Doors"
+    },
+    {
+      id: "patio-door",
+      label: "uPVC Patio Door",
+      description: "Supply & installation of uPVC Patio Door",
+      group: "Doors"
+    },
+    {
+      id: "composite",
+      label: "Composite Door",
+      description: "Supply & installation of a Single Composite Door",
+      group: "Configured"
+    },
+    {
+      id: "tilt-turn",
+      label: "uPVC Tilt and Turn Windows",
+      description: "Supply & installation of uPVC Tilt and Turn Windows",
+      group: "Windows"
+    },
+    {
+      id: "custom",
+      label: "Custom",
+      description: "",
+      group: "Free form"
+    }
   ],
+
+  bulk: {
+    maxRows: 25,
+    templateItemCount: 5,
+    baseHeaders: ["letter_date", "completion_date", "homeowner", "address"]
+  },
 
   signatures: [
     {
       label: "No signature",
-      path: "assets/signature-placeholder.png",
-      name: "Name",
-      role: "Role"
+      path: "",
+      name: "",
+      role: ""
     },
     {
       label: "Valeriu Sapteboi, Sales Manager",

@@ -29,9 +29,16 @@
       <label for="address">Full Property Address</label>
       <textarea id="address"></textarea>
 
-      <label>Completed Works</label>
+      <div class="field-heading">
+        <label>Completed Works</label>
+        <span class="item-count" id="worksCount">0 items</span>
+      </div>
+      <div class="works-empty" id="worksEmpty">No completed works added yet.</div>
       <div id="worksContainer"></div>
-      <button class="secondary" type="button" id="addWorkBtn">Add another item</button>
+      <button class="secondary add-work-btn" type="button" id="addWorkBtn">
+        <span aria-hidden="true">＋</span> Add completed work
+      </button>
+      <p class="field-error" id="worksError" role="alert" hidden>Add at least one completed work before creating a PDF.</p>
 
       <label for="signatureSelect">Signature</label>
       <select id="signatureSelect"></select>
@@ -53,56 +60,60 @@
       </div>
 
       <button class="primary" type="button" id="createPdfBtn">Create PDF</button>
+      <button class="secondary bulk-launch-btn" type="button" id="bulkCreateBtn">Bulk create documents</button>
       <button class="secondary" type="button" id="resetBtn">Reset</button>
+      <button class="secondary edit-document-btn" type="button" id="editDocumentBtn" aria-pressed="false">
+        Edit document text
+      </button>
     </section>
 
     <section class="preview-wrap">
       <article class="page" id="letterPage">
         <img class="logo" id="logoPreview" alt="Expert Windows logo" />
 
-        <h2 class="doc-title" id="documentTitle"></h2>
+        <h2 class="doc-title" id="documentTitle" data-document-editable></h2>
         <div class="rule"></div>
 
-        <div class="company-details" id="companyDetails"></div>
+        <div class="company-details" id="companyDetails" data-document-editable></div>
 
         <div class="recipient">
-          <div id="outLetterDate"></div>
-          <div id="outHomeowner"></div>
-          <div id="outAddress"></div>
+          <div id="outLetterDate" data-document-editable></div>
+          <div id="outHomeowner" data-document-editable></div>
+          <div id="outAddress" data-document-editable></div>
         </div>
 
         <div class="letter-body">
-          <p class="subject">Re: Confirmation of Installation Completion – <strong id="outSubjectAddress"></strong></p>
+          <p class="subject" data-document-editable>Re: Confirmation of Installation Completion – <strong id="outSubjectAddress"></strong></p>
 
-          <p>
+          <p data-document-editable>
             We are pleased to confirm that the installation at
             <strong id="outBodyAddress"></strong>, was completed on
             <strong id="outCompletionDate"></strong>, as scheduled.
           </p>
 
-          <p id="worksIntro"></p>
-          <ul class="works-list" id="outWorksList"></ul>
+          <p id="worksIntro" data-document-editable></p>
+          <ul class="works-list" id="outWorksList" data-document-editable></ul>
 
-          <p id="qualityParagraph"></p>
-          <p id="aftercareParagraph"></p>
-          <p class="thank-you" id="thankYouParagraph"></p>
+          <p id="qualityParagraph" data-document-editable></p>
+          <p id="aftercareParagraph" data-document-editable></p>
+          <p class="thank-you" id="thankYouParagraph" data-document-editable></p>
 
           <div class="signature-area" id="signatureArea">
-            <p id="warmRegards"></p>
+            <p id="warmRegards" data-document-editable></p>
 
             <div class="signature-grid">
               <div class="signature-box">
-                <div class="signature-label">Signature</div>
+                <div class="signature-label" data-document-editable>Signature</div>
                 <img class="signature-img" id="signaturePreview" alt="Signature" />
                 <div class="signature-line"></div>
-                <div class="signature-name" id="outSignoffName"></div>
-                <div class="role" id="outSignoffRole"></div>
+                <div class="signature-name" id="outSignoffName" data-document-editable></div>
+                <div class="role" id="outSignoffRole" data-document-editable></div>
               </div>
 
               <div class="date-box">
-                <div class="date-label">Date</div>
+                <div class="date-label" data-document-editable>Date</div>
                 <div class="date-line"></div>
-                <div class="signature-date" id="outSignatureDate"></div>
+                <div class="signature-date" id="outSignatureDate" data-document-editable></div>
               </div>
             </div>
           </div>
@@ -111,8 +122,142 @@
     </section>
   </main>
 
+  <dialog class="modal work-modal" id="workDialog" aria-labelledby="workDialogTitle">
+    <div class="modal-shell">
+      <header class="modal-header">
+        <div>
+          <span class="eyebrow">Completed works</span>
+          <h2 id="workDialogTitle">Choose an item</h2>
+          <p>Select a template or write a custom description.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-dialog="workDialog" aria-label="Close">×</button>
+      </header>
+
+      <div class="work-choice-grid" id="workChoiceGrid"></div>
+
+      <section class="work-config" id="workConfig" hidden>
+        <div class="selected-work-heading">
+          <span>Selected item</span>
+          <strong id="selectedWorkLabel"></strong>
+        </div>
+
+        <div class="conditional-config" id="compositeConfig" hidden>
+          <fieldset>
+            <legend>Sidelights</legend>
+            <div class="segmented-control">
+              <label><input type="radio" name="sidelights" value="0" checked /><span>None</span></label>
+              <label><input type="radio" name="sidelights" value="1" /><span>1 sidelight</span></label>
+              <label><input type="radio" name="sidelights" value="2" /><span>2 sidelights</span></label>
+            </div>
+          </fieldset>
+          <label class="toggle-field" for="hasToplight">
+            <input id="hasToplight" type="checkbox" />
+            <span>
+              <strong>Add toplight</strong>
+              <small>Positioned above the composite door</small>
+            </span>
+          </label>
+        </div>
+
+        <div class="conditional-config" id="customConfig" hidden>
+          <label for="customWorkText">Custom completed work</label>
+          <textarea id="customWorkText" placeholder="Describe the completed work"></textarea>
+          <label class="toggle-field" for="customPrefix">
+            <input id="customPrefix" type="checkbox" checked />
+            <span>
+              <strong>Add standard prefix</strong>
+              <small>“Supply &amp; installation of”</small>
+            </span>
+          </label>
+          <p class="field-error" id="customWorkError" role="alert" hidden>Enter a description for the custom work.</p>
+        </div>
+
+        <div class="modal-quantity-row">
+          <span>Quantity</span>
+          <div class="quantity-stepper modal-stepper" role="group" aria-label="Item quantity">
+            <button class="quantity-btn" id="modalQtyMinus" type="button" aria-label="Decrease quantity">−</button>
+            <input class="quantity-input" id="modalQuantity" type="number" min="1" step="1" value="1" aria-label="Quantity" inputmode="numeric" />
+            <button class="quantity-btn" id="modalQtyPlus" type="button" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="modal-footer">
+        <button class="secondary compact-btn" type="button" data-close-dialog="workDialog">Cancel</button>
+        <button class="primary compact-btn" type="button" id="confirmWorkBtn" disabled>Add to document</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="modal bulk-modal" id="bulkDialog" aria-labelledby="bulkDialogTitle">
+    <div class="modal-shell bulk-shell">
+      <header class="modal-header">
+        <div>
+          <span class="eyebrow">Batch tools</span>
+          <h2 id="bulkDialogTitle">Bulk create declarations</h2>
+          <p>Upload a CSV or paste rows copied directly from Excel.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-dialog="bulkDialog" aria-label="Close">×</button>
+      </header>
+
+      <div class="bulk-toolbar">
+        <button class="secondary compact-btn" type="button" id="downloadCsvBtn">Download CSV template</button>
+        <label class="secondary compact-btn file-button" for="bulkFileInput">Upload CSV</label>
+        <input id="bulkFileInput" type="file" accept=".csv,text/csv" hidden />
+        <button class="secondary compact-btn" type="button" id="togglePasteBtn">Paste from Excel</button>
+      </div>
+
+      <section class="paste-panel" id="pastePanel" hidden>
+        <label for="bulkPasteInput">Paste CSV or Excel cells, including the header row</label>
+        <textarea id="bulkPasteInput" placeholder="letter_date&#9;completion_date&#9;homeowner&#9;address&#9;item1_name&#9;item1_qty"></textarea>
+        <button class="primary compact-btn" type="button" id="importPasteBtn">Import pasted data</button>
+      </section>
+
+      <div class="bulk-empty" id="bulkEmpty">
+        <strong>No bulk rows loaded</strong>
+        <span>Download the template, upload a completed CSV, or paste from Excel.</span>
+      </div>
+
+      <section class="bulk-review" id="bulkReview" hidden>
+        <div class="review-heading">
+          <div>
+            <span class="eyebrow">Review before creation</span>
+            <h3 id="bulkRowCount">0 documents</h3>
+          </div>
+          <button class="text-button danger" type="button" id="clearBulkBtn">Clear all</button>
+        </div>
+        <div class="bulk-message" id="bulkMessage" role="status" aria-live="polite"></div>
+        <div class="bulk-table-wrap">
+          <table class="bulk-table" id="bulkTable"></table>
+        </div>
+        <p class="paste-hint">Tip: paste a block of Excel cells into any selected table cell to update multiple rows.</p>
+      </section>
+
+      <div class="generation-progress" id="generationProgress" hidden>
+        <div class="progress-copy">
+          <strong id="progressLabel">Preparing documents…</strong>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track"><span id="progressBar"></span></div>
+      </div>
+
+      <footer class="modal-footer bulk-footer">
+        <button class="secondary compact-btn" type="button" data-close-dialog="bulkDialog">Close</button>
+        <button class="secondary compact-btn" type="button" id="cancelGenerationBtn" hidden>Cancel generation</button>
+        <button class="secondary compact-btn" type="button" id="openReviewTabsBtn" disabled>Open review tabs</button>
+        <button class="primary compact-btn" type="button" id="generateZipBtn" disabled>Download ZIP of PDFs</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <div class="batch-render-stage" id="batchRenderStage" aria-hidden="true"></div>
+
+  <script src="vendor/papaparse-5.7.0.min.js"></script>
+  <script src="vendor/html2pdf-0.14.0.bundle.min.js"></script>
+  <script src="vendor/jszip-3.10.1.min.js"></script>
   <script src="js/defaults.js"></script>
   <script src="js/helpers.js"></script>
+  <script src="js/bulk.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

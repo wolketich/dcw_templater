@@ -34,3 +34,52 @@ function formatLongDate(value) {
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
+
+function parseDateToIso(value) {
+  const input = String(value || "").trim();
+  if (!input) return "";
+
+  let year;
+  let month;
+  let day;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+    [year, month, day] = input.split("-").map(Number);
+  } else if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input)) {
+    [day, month, year] = input.split("/").map(Number);
+  } else {
+    return "";
+  }
+
+  const date = new Date(year, month - 1, day);
+  const valid = date.getFullYear() === year
+    && date.getMonth() === month - 1
+    && date.getDate() === day;
+
+  if (!valid) return "";
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function safeFilename(value) {
+  const cleaned = String(value || "Document")
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "-")
+    .replace(/\s+/g, " ")
+    .replace(/[. ]+$/g, "")
+    .trim();
+  return cleaned || "Document";
+}
+
+function pluralise(count, singular, plural = `${singular}s`) {
+  return count === 1 ? singular : plural;
+}
