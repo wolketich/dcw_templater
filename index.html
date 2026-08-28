@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Declaration of Completed Works Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="form-panel">
+      <h1 id="appTitle">Declaration Generator</h1>
+      <p id="appDescription">Fill the fields, pick a signature, then create the PDF.</p>
+
+      <div class="row">
+        <div>
+          <label for="letterDate">Letter Date</label>
+          <input id="letterDate" type="date" />
+        </div>
+        <div>
+          <label for="completionDate">Completion Date</label>
+          <input id="completionDate" type="date" />
+        </div>
+      </div>
+
+      <label for="homeowner">Homeowner Full Name</label>
+      <input id="homeowner" type="text" />
+
+      <label for="address">Full Property Address</label>
+      <textarea id="address"></textarea>
+
+      <label>Completed Works</label>
+      <div id="worksContainer"></div>
+      <button class="secondary" type="button" id="addWorkBtn">Add another item</button>
+
+      <label for="signatureSelect">Signature</label>
+      <select id="signatureSelect"></select>
+
+      <label class="checkbox-field" for="hideSignature">
+        <input id="hideSignature" type="checkbox" />
+        Hide signature
+      </label>
+        
+      <div class="row">
+        <div>
+          <label for="signoffName">Signatory Name</label>
+          <input id="signoffName" type="text" />
+        </div>
+        <div>
+          <label for="signoffRole">Role</label>
+          <input id="signoffRole" type="text" />
+        </div>
+      </div>
+
+      <button class="primary" type="button" id="createPdfBtn">Create PDF</button>
+      <button class="secondary" type="button" id="resetBtn">Reset</button>
+    </section>
+
+    <section class="preview-wrap">
+      <article class="page" id="letterPage">
+        <img class="logo" id="logoPreview" alt="Expert Windows logo" />
+
+        <h2 class="doc-title" id="documentTitle"></h2>
+        <div class="rule"></div>
+
+        <div class="company-details" id="companyDetails"></div>
+
+        <div class="recipient">
+          <div id="outLetterDate"></div>
+          <div id="outHomeowner"></div>
+          <div id="outAddress"></div>
+        </div>
+
+        <div class="letter-body">
+          <p class="subject">Re: Confirmation of Installation Completion – <strong id="outSubjectAddress"></strong></p>
+
+          <p>
+            We are pleased to confirm that the installation at
+            <strong id="outBodyAddress"></strong>, was completed on
+            <strong id="outCompletionDate"></strong>, as scheduled.
+          </p>
+
+          <p id="worksIntro"></p>
+          <ul class="works-list" id="outWorksList"></ul>
+
+          <p id="qualityParagraph"></p>
+          <p id="aftercareParagraph"></p>
+          <p class="thank-you" id="thankYouParagraph"></p>
+
+          <div class="signature-area" id="signatureArea">
+            <p id="warmRegards"></p>
+
+            <div class="signature-grid">
+              <div class="signature-box">
+                <div class="signature-label">Signature</div>
+                <img class="signature-img" id="signaturePreview" alt="Signature" />
+                <div class="signature-line"></div>
+                <div class="signature-name" id="outSignoffName"></div>
+                <div class="role" id="outSignoffRole"></div>
+              </div>
+
+              <div class="date-box">
+                <div class="date-label">Date</div>
+                <div class="date-line"></div>
+                <div class="signature-date" id="outSignatureDate"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="js/defaults.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
